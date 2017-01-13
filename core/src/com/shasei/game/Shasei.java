@@ -6,32 +6,36 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 
 public class Shasei extends Game {
 
 	private SpriteBatch batch;
-	private Texture heroTexture;
-	private float heroX, heroY;
-
-	private Texture goalTexture;
-	private float goalX, goalY;
-	private Texture backgroungTexture;
-
-	private Texture winMessage;
+	private Sprite heroSprite;
+	private Sprite goalSprite;
+	private Sprite backgroundSprite;
+	private Sprite winTextSprite;
 	private boolean win;
 
 	public void create() {
 		batch = new SpriteBatch();
 		Random rnd = new Random();
-		heroTexture = new Texture(Gdx.files.internal("hero.png"));
-		heroX = 20;
-		heroY = 20;
-		goalTexture = new Texture(Gdx.files.internal("goal.png"));
-		goalX = rnd.nextInt(800 - goalTexture.getWidth());
-		goalY = rnd.nextInt(600 - goalTexture.getHeight());
-		backgroungTexture = new Texture(Gdx.files.internal("background.png"));
-		winMessage = new Texture(Gdx.files.internal("win.png"));
+
+		heroSprite = new Sprite(new Texture(Gdx.files.internal("hero.png")));
+		heroSprite.setPosition(20, 20);
+
+		goalSprite = new Sprite(new Texture(Gdx.files.internal("goal.png")));
+		goalSprite.setPosition(rnd.nextInt(800 - (int) goalSprite.getWidth()),
+				rnd.nextInt(600 - (int) goalSprite.getWidth()));
+
+		backgroundSprite = new Sprite(new Texture(Gdx.files.internal("background.png")));
+		backgroundSprite.setPosition(0, 0);
+
+		winTextSprite = new Sprite(new Texture(Gdx.files.internal("win.png")));
+		winTextSprite.setPosition(800 / 2 - winTextSprite.getWidth() / 2, 600 / 2 - winTextSprite.getHeight() / 2);
+
 		win = false;
 	}
 
@@ -39,40 +43,47 @@ public class Shasei extends Game {
 		float dt = Gdx.graphics.getDeltaTime();
 		if (!win) {
 			if (Gdx.input.isKeyPressed(Keys.LEFT))
-				heroX -= 100 * dt;
+				heroSprite.translateX(-100 * dt);
 			if (Gdx.input.isKeyPressed(Keys.RIGHT))
-				heroX += 100 * dt;
+				heroSprite.translateX(100 * dt);
 			if (Gdx.input.isKeyPressed(Keys.DOWN))
-				heroY -= 100 * dt;
+				heroSprite.translateY(-100 * dt);
 			if (Gdx.input.isKeyPressed(Keys.UP))
-				heroY += 100 * dt;
+				heroSprite.translateY(100 * dt);
+			
 			if (Gdx.input.isKeyPressed(Keys.X)) {
-				float distanceX = (goalX + goalTexture.getWidth() / 2) - (heroX + heroTexture.getWidth() / 2);
-				float distanceY = (goalY + goalTexture.getHeight() / 2) - (heroY + heroTexture.getHeight() / 2);
+				float distanceX = (goalSprite.getX() + goalSprite.getWidth() / 2)
+						- (heroSprite.getX() + heroSprite.getWidth() / 2);
+				float distanceY = (goalSprite.getY() + goalSprite.getHeight() / 2)
+						- (heroSprite.getY() + heroSprite.getHeight() / 2);
 				if (Math.abs(distanceX) > Math.abs(distanceY)) {
 					if (distanceX > 0)
-						heroX += 250 * dt;
+						heroSprite.translateX(250 * dt);
 					else
-						heroX -= 250 * dt;
+						heroSprite.translateX(-250 * dt);
 				} else {
 					if (distanceY > 0)
-						heroY += 250 * dt;
+						heroSprite.translateY(250 * dt);
 					else
-						heroY -= 250 * dt;
+						heroSprite.translateY(-250 * dt);
 				}
 			}
 		}
-		if ((heroX > goalX) && (heroX + heroTexture.getWidth() < goalX + goalTexture.getWidth()) && (heroY > goalY)
-				&& (heroY + heroTexture.getHeight() < goalY + goalTexture.getHeight()))
+		
+		Rectangle goalRectangle = goalSprite.getBoundingRectangle();
+		Rectangle heroRectangle = heroSprite.getBoundingRectangle();
+
+		if (goalRectangle.contains(heroRectangle))
 			win = true;
+
 		Gdx.gl.glClearColor(0.8f, 0.8f, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
-		batch.draw(backgroungTexture, 0, 0);
-		batch.draw(goalTexture, goalX, goalY);
-		batch.draw(heroTexture, heroX, heroY);
+		backgroundSprite.draw(batch);
+		goalSprite.draw(batch);
+		heroSprite.draw(batch);
 		if (win)
-			batch.draw(winMessage, 800 / 2 - winMessage.getWidth() / 2, 600 / 2 - winMessage.getHeight() / 2);
+			winTextSprite.draw(batch);
 		batch.end();
 	}
 }
