@@ -24,14 +24,14 @@ public class Shasei extends Game {
 	public void create() {
 		batch = new SpriteBatch();
 		Random rnd = new Random();
-		heroTexture = new Texture(Gdx.files.internal("assets/hero.png"));
+		heroTexture = new Texture(Gdx.files.internal("hero.png"));
 		heroX = 20;
 		heroY = 20;
-		goalTexture = new Texture(Gdx.files.internal("assets/goal.png"));
+		goalTexture = new Texture(Gdx.files.internal("goal.png"));
 		goalX = rnd.nextInt(800 - goalTexture.getWidth());
 		goalY = rnd.nextInt(600 - goalTexture.getHeight());
-		backgroungTexture = new Texture(Gdx.files.internal("assets/background.png"));
-		winMessage = new Texture(Gdx.files.internal("assets/win.png"));
+		backgroungTexture = new Texture(Gdx.files.internal("background.png"));
+		winMessage = new Texture(Gdx.files.internal("win.png"));
 		win = false;
 	}
 
